@@ -1,15 +1,18 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator";
 
 export default function AdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Profile</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="text-lg font-medium">Dashboard</h3>
+        {/* <p className="text-sm text-muted-foreground">
           This is how others will see you on the site.
-        </p>
+        </p> */}
       </div>
       <Separator />
+      
       {/* <ProfileForm /> */}
       <main>Here goes the body</main>
     </div>
