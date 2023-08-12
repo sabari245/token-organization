@@ -9,16 +9,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-type MintFormValues = {
-  tokenName: string;
-  tokenSymbol: string;
-  amountToMint: number;
+type AddMemberFormValues = {
+  name: string;
+  address: string;
+  tokenAllocated: number;
+  date: string;
 };
 
-export function MintForm() {
-  const form = useForm<MintFormValues>();
+export function AddMemberForm() {
+  const form = useForm<AddMemberFormValues>();
 
-  function onSubmit(data: MintFormValues) {
+  function onSubmit(data: AddMemberFormValues) {
     // Handle form submission
   }
 
@@ -27,45 +28,56 @@ export function MintForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="tokenName"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Token Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter token name" {...field} />
+                <Input placeholder="Enter name" {...field} />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="tokenSymbol"
+          name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Token Symbol</FormLabel>
+              <FormLabel>Ethereum Wallet Address</FormLabel>
               <FormControl>
-                <Input placeholder="Enter token symbol" {...field} />
+                <Input placeholder="Enter Ethereum wallet address" {...field} />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="amountToMint"
+          name="tokenAllocated"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount to Mint</FormLabel>
+              <FormLabel>No of Tokens Allocated</FormLabel>
               <FormControl>
                 <Input
-                  type="number"
-                  placeholder="Enter amount to mint"
+                  placeholder="Enter number of tokens allocated"
                   {...field}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-        <Button type="submit">Mint Token</Button>
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Date</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="Enter date" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Add Member</Button>
       </form>
     </Form>
   );

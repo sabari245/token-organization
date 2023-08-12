@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Wallet2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -34,11 +35,22 @@ export default function LoginPage() {
               <Input id="text" type="text" placeholder="0x0000" />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col">
             <Button className="w-full">
               Login to Organization
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+            <div>
+              <p className="px-8 mt-2 text-sm text-right text-muted-foreground">
+                Wanna create one?{" "}
+                <Button
+                  variant="link"
+                  className="p-0 m-0 underline underline-offset-4 hover:text-primary"
+                >
+                  Create Organization
+                </Button>
+              </p>
+            </div>
           </CardFooter>
         </Card>
       </div>
