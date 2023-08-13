@@ -14,6 +14,7 @@ import {
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { arbitrum, mainnet, polygon, localhost, Chain } from "wagmi/chains";
+import { ClaimToken } from "./claim";
 
 const localnet: Chain = {
   id: 31337,
@@ -51,12 +52,8 @@ export default function Home() {
   return (
     <main>
       <WagmiConfig config={wagmiConfig}>
-        <div className="p-6">
-          <WalletSection />
-          <Separator className="my-6" />
-          <RetrieveSection />
-          <Separator className="my-6" />
-          <StoreSection />
+        <div className="flex items-center justify-center w-screen min-h-screen">
+          <ClaimToken />
         </div>
       </WagmiConfig>
 
