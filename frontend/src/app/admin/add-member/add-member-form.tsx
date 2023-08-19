@@ -8,19 +8,52 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { usePublicClient, useWalletClient } from "wagmi";
+import contract from "@/components/interface.json";
 
 type AddMemberFormValues = {
-  name: string;
-  address: string;
-  tokenAllocated: number;
-  date: string;
+  account: string;
+  initialTokens: number;
+  vestingPeriod: string;
 };
 
 export function AddMemberForm() {
   const form = useForm<AddMemberFormValues>();
 
-  function onSubmit(data: AddMemberFormValues) {
+  // chain interactors
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+  async function onSubmit(formData: AddMemberFormValues) {
     // Handle form submission
+
+    if (!walletClient) {
+      console.log("wallets not connected");
+      return;
+    }
+
+    const [address] = await walletClient.getAddresses();
+
+    const vestingPeriod = calculateVestingPeriod(formData.vestingPeriod);
+
+    const { request } = await publicClient.simulateContract({
+      abi: contract.abi,
+      address: `0x${contract.address.substring(2)}`,
+      functionName: "addMember",
+      args: [formData.account, formData.initialTokens, vestingPeriod],
+      account: address,
+    });
+
+    const hash = await walletClient.writeContract(request);
+  }
+
+  function calculateVestingPeriod(vestingPeriod: string): number {
+    const enteredDate = new Date(vestingPeriod).getTime();
+    const currentDate = Date.now();
+    const differenceInMilliseconds = enteredDate - currentDate;
+    const differenceInDays = Math.ceil(
+      differenceInMilliseconds / (1000 * 60 * 60 * 24)
+    );
+    return differenceInDays;
   }
 
   return (
@@ -28,51 +61,40 @@ export function AddMemberForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="name"
+          name="account"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Account</FormLabel>
               <FormControl>
-                <Input placeholder="Enter name" {...field} />
+                <Input placeholder="Enter account" {...field} />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="address"
+          name="initialTokens"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Ethereum Wallet Address</FormLabel>
+              <FormLabel>Initial Tokens</FormLabel>
               <FormControl>
-                <Input placeholder="Enter Ethereum wallet address" {...field} />
+                <Input placeholder="Enter initial tokens" {...field} />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="tokenAllocated"
+          name="vestingPeriod"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>No of Tokens Allocated</FormLabel>
+              <FormLabel>Vesting Period</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter number of tokens allocated"
+                  type="datetime-local"
+                  placeholder="Enter vesting period"
                   {...field}
                 />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date</FormLabel>
-              <FormControl>
-                <Input type="date" placeholder="Enter date" {...field} />
               </FormControl>
             </FormItem>
           )}
