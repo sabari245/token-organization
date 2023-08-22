@@ -27,7 +27,7 @@ describe("Organization Contract", () => {
 
         expect(remainingTokens).to.equal(500);
 
-        await organizationContract.claimVestedTokens();
+        await organizationContract.connect(member).claimVestedTokens(member.address);
 
         [remainingTokens, , ] = await organizationContract.getVestingInfo(member.address);
         expect(remainingTokens).to.equal(0);
@@ -82,9 +82,23 @@ describe("OrganizationProxy Contract", () => {
         const vestingPeriod = 0;
 
         await organizationProxyContract.createOrganization("MyOrg", "ORG", 1000);
-        await organizationProxyContract.addMember(owner.address, initialTokens, vestingPeriod);
+        await organizationProxyContract.addMember(addr1.address, initialTokens, vestingPeriod);
 
-        const [remainingTokens, , ] = await organizationProxyContract.getVestingInfo(owner.address);
+        const [remainingTokens, , ] = await organizationProxyContract.getVestingInfo(owner.address, addr1.address);
         expect(remainingTokens).to.equal(initialTokens);
     });
+
+    it("should return the details of organization", async function () {
+        const {contract, owner} = await deployContract();
+        const organizationProxyContract = contract;
+        
+        await organizationProxyContract.createOrganization("MyOrg", "ORG", 1000);
+        const [name, token, value] = await organizationProxyContract.getOrganizationDetailsOfSender();
+
+        expect(name).to.equal("MyOrg");
+        expect(token).to.equal("ORG");
+        expect(value).to.equal(1000);
+    });
+
+
 });

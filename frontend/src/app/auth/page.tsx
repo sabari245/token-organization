@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -7,14 +9,12 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Wallet2, ArrowRight } from "lucide-react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { useWeb3Modal } from "@web3modal/react";
 import contract from "@/components/interface.json";
-import { useState } from "react";
 
 import {
   Dialog,
@@ -33,6 +33,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import Link from "next/link";
 
 type CreateOrgFormDetails = {
   orgName: string;
@@ -130,7 +131,7 @@ export function CreateOrgDialog() {
 export default function LoginPage() {
   // wallet interactors
   const { open, close } = useWeb3Modal();
-  const { status, isConnected, address } = useAccount();
+  const { status, address } = useAccount();
 
   // chain interactors
   const publicClient = usePublicClient();
@@ -160,16 +161,20 @@ export default function LoginPage() {
                 </Button>
               )}
               <Separator className="my-4" />
-              <div className="grid gap-2">
-                <Label htmlFor="text">Organization Address</Label>
-                <Input id="text" type="text" placeholder="0x0000" />
-              </div>
             </CardContent>
-            <CardFooter className="flex-col">
-              <Button className="w-full">
-                Login to Organization
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+            <CardFooter className="flex-col gap-4">
+              <Link href="/admin" className="flex items-center w-full">
+                <Button variant="default" className="w-full">
+                  Continue as Admin
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/member" className="flex items-center w-full">
+                <Button variant="outline" className="w-full">
+                  Continue as Member
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
               <div>
                 <p className="px-8 mt-2 text-sm text-right text-muted-foreground">
                   Wanna create one?{" "}

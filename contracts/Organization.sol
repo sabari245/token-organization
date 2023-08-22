@@ -24,8 +24,8 @@ contract Organization is ERC20, Ownable {
         _mint(msg.sender, initialSupply);
     }
 
-    modifier onlyMember() {
-        require(members[msg.sender].initialTokens > 0, "Not a member");
+    modifier onlyMember(address account) {
+        require(members[account].initialTokens > 0, "Not a member");
         _;
     }
 
@@ -36,6 +36,14 @@ contract Organization is ERC20, Ownable {
             "Vesting period not over yet"
         );
         _;
+    }
+
+    function getOrganizationDetails()
+        external
+        view
+        returns (string memory, string memory, uint256)
+    {
+        return (name(), symbol(), totalSupply());
     }
 
     function mintTokens(address account, uint256 amount) external onlyOwner {
@@ -55,16 +63,14 @@ contract Organization is ERC20, Ownable {
         });
     }
 
-    function claimVestedTokens()
-        external
-        onlyMember
-        vestingPeriodOver(msg.sender)
-    {
-        Member storage member = members[msg.sender];
+    function claimVestedTokens(
+        address account
+    ) external onlyMember(account) vestingPeriodOver(account) {
+        Member storage member = members[account];
         uint256 claimableTokens = member.initialTokens;
         member.initialTokens = 0;
         member.vestingStartTime = 0;
-        _transfer(owner(), msg.sender, claimableTokens);
+        _transfer(owner(), account, claimableTokens);
     }
 
     function getVestingInfo(
@@ -99,10 +105,8 @@ contract OrganizationProxy {
         Organization org = ownerToOrganization[msg.sender];
         require(address(org) != address(0), "Organization not found");
 
-        // Transfer ownership of the organization
         org.transferOwnership(newOwner);
 
-        // Update the mapping with the new owner
         ownerToOrganization[newOwner] = org;
         delete ownerToOrganization[msg.sender];
     }
@@ -123,13 +127,23 @@ contract OrganizationProxy {
         );
     }
 
-    function claimVestedTokens() external {
-        ownerToOrganization[msg.sender].claimVestedTokens();
+    function getOrganizationDetailsOfSender()
+        external
+        view
+        returns (string memory, string memory, uint256)
+    {
+        console.log(msg.sender);
+        return ownerToOrganization[msg.sender].getOrganizationDetails();
+    }
+
+    function claimVestedTokens(address orgAddress) external {
+        ownerToOrganization[orgAddress].claimVestedTokens(msg.sender);
     }
 
     function getVestingInfo(
-        address account
+        address orgAddress,
+        address member
     ) external view returns (uint256, uint256, uint256) {
-        return ownerToOrganization[msg.sender].getVestingInfo(account);
+        return ownerToOrganization[orgAddress].getVestingInfo(member);
     }
 }
